@@ -14,6 +14,35 @@ sp: spotipy.Spotify = spotipy.Spotify(auth_manager=SpotifyClientCredentials(clie
 
 app: Flask = Flask(__name__)
 
+def generate_chaser_cache() -> dict:
+    """Generate a cache of femtanyl tracks and albums."""
+    # Search for femtanyl tracks
+    track_results = sp.search(q='artist:femtanyl', type='track', limit=50)
+    tracks = track_results['tracks']['items']
+    track_list: list[str] = []
+    
+    # Search for femtanyl albums
+    album_results = sp.search(q='artist:femtanyl', type='album', limit=50)
+    albums = album_results['albums']['items']
+    
+    # Write tracks and albums to cache file
+    with open('chaser.cache', 'w') as f:
+        # Write tracks
+        for track in tracks:
+            if track['artists'][0]['name'] == 'femtanyl':
+                track_list.append(f"{track['name']}")
+                f.write(f"{track['name']}\n")
+        
+        # Write albums
+        for album in albums:
+            if album['name'] not in track_list:
+                f.write(f"{album['name']}\n")
+
+        f.write("femtanyl")
+    
+    print(f"Generated chaser cache with {len(tracks)} tracks and {len(albums)} albums")
+    return tracks
+
 def get_random_song() -> dict:
     randint: int = random.randint(1, 4)
     if randint == 1:
@@ -63,4 +92,6 @@ def index():
                          chaser_status=chaser_status)
 
 if __name__ == '__main__':
+    if not os.path.exists('chaser.cache'):
+        generate_chaser_cache()
     app.run(debug=True)
