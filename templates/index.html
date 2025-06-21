@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="A modern web application built with best practices">
+    <meta name="keywords" content="web, application, modern, responsive">
+    <meta name="author" content="Your Name">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph Meta Tags for Social Media -->
+    <meta property="og:title" content="Modern Web Application">
+    <meta property="og:description" content="A modern web application built with best practices">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourdomain.com">
+    <meta property="og:image" content="https://yourdomain.com/og-image.jpg">
+    <meta property="og:site_name" content="Your App Name">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Modern Web Application">
+    <meta name="twitter:description" content="A modern web application built with best practices">
+    <meta name="twitter:image" content="https://yourdomain.com/twitter-image.jpg">
+    
+    <!-- Favicon and App Icons -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    
+    <!-- Theme Color for Mobile Browsers -->
+    <meta name="theme-color" content="#0f0f23">
+    <meta name="msapplication-TileColor" content="#0f0f23">
+    
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https://i.scdn.co https://mosaic.scdn.co https://wrapped-images.spotifycdn.com data:;">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    
+    <!-- Preconnect to External Domains (if needed) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    
+    <title>Modern Web Application</title>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">Random Song</h1>
+            <p class="subtitle">Discover your next favorite track</p>
+        </header>
+        
+        <main class="main-content">
+            <div class="song-card">
+                {% if album_cover_url %}
+                <div class="album-cover">
+                    <img src="{{ album_cover_url }}" alt="Album cover for {{ song_name }}" class="cover-image">
+                </div>
+                {% endif %}
+                <div class="song-info">
+                    <h2 class="song-title">{{ song_name }}</h2>
+                    <p class="artist-name">{{ artist_name }}</p>
+                </div>
+                <div class="song-actions">
+                    <button class="btn btn-primary" onclick="location.reload()">Get New Song</button>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p>&copy; 2024 Modern Web Application. Built with ❤️</p>
+        </footer>
+    </div>
+</body>
+</html>
