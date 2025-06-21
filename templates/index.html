@@ -57,17 +57,20 @@
 <body>
     <div class="container">
         <header class="header">
-            <h1 class="title">Random Song</h1>
-            <p class="subtitle">Discover your next favorite track</p>
+            <h1 class="title">Chaser?</h1>
+            <p class="subtitle">Is this chaser?</p>
+        <div style="font-size: 4rem; margin: 1rem 0;">
+            {{ chaser_status }}
+        </div>
         </header>
         
         <main class="main-content">
+            {% if album_cover_url %}
+            <div class="album-cover">
+                <img src="{{ album_cover_url }}" alt="Album cover for {{ song_name }}" class="cover-image">
+            </div>
+            {% endif %}
             <div class="song-card">
-                {% if album_cover_url %}
-                <div class="album-cover">
-                    <img src="{{ album_cover_url }}" alt="Album cover for {{ song_name }}" class="cover-image">
-                </div>
-                {% endif %}
                 <div class="song-info">
                     <h2 class="song-title">{{ song_name }}</h2>
                     <p class="artist-name">{{ artist_name }}</p>

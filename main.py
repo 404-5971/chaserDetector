@@ -27,17 +27,40 @@ def get_random_song() -> dict:
         selected_genre = random.choice(genres)
         results = sp.search(q=f'genre:{selected_genre}', type='track', limit=50)
         tracks = results['tracks']['items']
+        
+        # results = sp.search(q=f'artist:bungex', type='track', limit=50)
+        # tracks = results['tracks']['items']
 
     return random.choice(tracks)
+
+def get_chaser_status(song: dict) -> str:
+    """Determine if a song is chaser, chaser adjacent, or not chaser."""
+    song_name = song['name'].lower()
+    all_artists = [artist['name'].lower() for artist in song['artists']]
+    
+    # Check if primary artist is femtanyl
+    if all_artists[0] == 'femtanyl':
+        return 'YES'
+    
+    # Check if femtanyl appears anywhere (song name or any artist)
+    if 'femtanyl' in song_name or 'femtanyl' in all_artists:
+        return 'Chaser Adjacent'
+    
+    return 'NO'
 
 @app.route('/')
 def index():
     song = get_random_song()
     album_cover_url = song['album']['images'][0]['url'] if song['album']['images'] else None
+    # Get all artist names as a list
+    all_artists = [artist['name'] for artist in song['artists']]
+    chaser_status = get_chaser_status(song)
     return render_template('index.html', 
                          song_name=song['name'], 
                          artist_name=song['artists'][0]['name'],
-                         album_cover_url=album_cover_url)
+                         all_artists=all_artists,
+                         album_cover_url=album_cover_url,
+                         chaser_status=chaser_status)
 
 if __name__ == '__main__':
     app.run(debug=True)
