@@ -37,7 +37,7 @@
     <meta name="msapplication-TileColor" content="#0f0f23">
     
     <!-- Security Headers -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https://i.scdn.co https://mosaic.scdn.co https://wrapped-images.spotifycdn.com data:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.youtube.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https://i.scdn.co https://mosaic.scdn.co https://wrapped-images.spotifycdn.com data:; frame-src 'self' https://www.youtube.com;">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-Frame-Options" content="DENY">
     <meta http-equiv="X-XSS-Protection" content="1; mode=block">
@@ -81,9 +81,35 @@
             </div>
         </main>
         
+        <!-- Hidden YouTube audio player -->
+        {% if youtube_video_id %}
+        <div style="position: absolute; left: -9999px; top: -9999px;">
+            <iframe 
+                id="youtube-player"
+                width="1" 
+                height="1" 
+                src="https://www.youtube.com/embed/{{ youtube_video_id }}?autoplay=1&controls=0&disablekb=1&fs=0&iv_load_policy=3&modestbranding=1&playsinline=1&rel=0&showinfo=0&loop=1&playlist={{ youtube_video_id }}"
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+            </iframe>
+        </div>
+        {% endif %}
+        
         <footer class="footer">
             <p>&copy; 2024 Modern Web Application. Built with ❤️</p>
         </footer>
     </div>
+    
+    <script>
+        // Auto-play YouTube audio when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const player = document.getElementById('youtube-player');
+            if (player) {
+                // The iframe will autoplay due to the autoplay=1 parameter
+                console.log('YouTube audio player loaded and autoplay enabled');
+            }
+        });
+    </script>
 </body>
 </html>

@@ -4,6 +4,9 @@ import dotenv
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import random
+import re
+import urllib.parse
+import urllib.request
 
 dotenv.load_dotenv()
 
@@ -79,6 +82,27 @@ def get_chaser_status(song: dict) -> str:
     
     return 'NO'
 
+def get_youtube_video(song_name: str, artist_name: str) -> str | None:
+    """Search for a song on YouTube and return the first video ID."""
+    try:
+        search_query = f"{song_name} {artist_name} audio"
+        encoded_query = urllib.parse.quote(search_query)
+        search_url = f"https://www.youtube.com/results?search_query={encoded_query}"
+        
+        # Get the search results page
+        req = urllib.request.Request(search_url, headers={'User-Agent': 'Mozilla/5.0'})
+        response = urllib.request.urlopen(req)
+        html = response.read().decode()
+        
+        # Extract video ID using regex
+        video_id_match = re.search(r'"videoId":"([^"]+)"', html)
+        if video_id_match:
+            return video_id_match.group(1)
+        return None
+    except Exception as e:
+        print(f"Error searching YouTube: {e}")
+        return None
+
 @app.route('/')
 def index():
     song = get_random_song()
@@ -86,12 +110,17 @@ def index():
     # Get all artist names as a list
     all_artists = [artist['name'] for artist in song['artists']]
     chaser_status = get_chaser_status(song)
+    
+    # Get YouTube video ID for audio playback
+    youtube_video_id = get_youtube_video(song['name'], song['artists'][0]['name'])
+    
     return render_template('index.html', 
                          song_name=song['name'], 
                          artist_name=song['artists'][0]['name'],
                          all_artists=all_artists,
                          album_cover_url=album_cover_url,
-                         chaser_status=chaser_status)
+                         chaser_status=chaser_status,
+                         youtube_video_id=youtube_video_id)
 
 if __name__ == '__main__':
     if not os.path.exists('chaser.cache'):
