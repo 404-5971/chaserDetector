@@ -71,9 +71,11 @@ def get_chaser_status(song: dict) -> str:
     if all_artists[0] == 'femtanyl':
         return 'YES'
     
-    # Check if femtanyl appears anywhere (song name or any artist)
-    if 'femtanyl' in song_name or 'femtanyl' in all_artists:
-        return 'Chaser Adjacent'
+    # if anything in the chaser.cache is in the song name, album name, or any artist's name, return 'Chaser Adjacent'
+    with open('chaser.cache', 'r') as f:
+        for line in f:
+            if line.strip() in song_name or line.strip() in all_artists or line.strip() in song['album']['name']:
+                return 'Chaser Adjacent'
     
     return 'NO'
 
