@@ -72,7 +72,13 @@
             {% endif %}
             <div class="song-card">
                 <div class="song-info">
-                    <h2 class="song-title">{{ song_name }}</h2>
+                    <h2 class="song-title">
+                        {{ song_name }}
+                        <span class="audio-indicator {% if audio_available %}audio-available{% else %}audio-unavailable{% endif %}" 
+                              title="{% if audio_available %}Audio available{% else %}Audio not available{% endif %}">
+                            {% if audio_available %}🔊{% else %}🔇{% endif %}
+                        </span>
+                    </h2>
                     <p class="artist-name">{{ artist_name }}</p>
                 </div>
                 <div class="song-actions">

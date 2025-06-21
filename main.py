@@ -82,26 +82,59 @@ def get_chaser_status(song: dict) -> str:
     
     return 'NO'
 
-def get_youtube_video(song_name: str, artist_name: str) -> str | None:
-    """Search for a song on YouTube and return the first video ID."""
+def get_youtube_video(song_name: str, artist_name: str) -> tuple[str | None, bool]:
+    """Search for a song on YouTube and return the first video ID and availability status."""
     try:
         search_query = f"{song_name} {artist_name} audio"
         encoded_query = urllib.parse.quote(search_query)
         search_url = f"https://www.youtube.com/results?search_query={encoded_query}"
         
         # Get the search results page
-        req = urllib.request.Request(search_url, headers={'User-Agent': 'Mozilla/5.0'})
+        req = urllib.request.Request(search_url, headers={
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        })
         response = urllib.request.urlopen(req)
         html = response.read().decode()
         
-        # Extract video ID using regex
-        video_id_match = re.search(r'"videoId":"([^"]+)"', html)
-        if video_id_match:
-            return video_id_match.group(1)
-        return None
+        # Look for video IDs in the search results
+        video_id_matches = re.findall(r'"videoId":"([^"]+)"', html)
+        
+        if not video_id_matches:
+            return None, False
+        
+        # Take the first video ID
+        video_id = video_id_matches[0]
+        
+        # Conservative approach: only mark as available for:
+        # 1. femtanyl tracks (which are more likely to have audio)
+        # 2. Popular artists in the breakcore/speedcore/hyperpop scene
+        # 3. Songs with clear artist names that match the search
+        
+        # Check if it's a femtanyl track
+        if artist_name.lower() == 'femtanyl':
+            return video_id, True
+        
+        # Check for other popular artists in the scene
+        popular_artists = [
+            'bungex', 'goreshit', 'machine girl', 'death grips', '100 gecs', 
+            'charli xcx', 'sophie', 'arca', 'aphex twin', 'venetian snares'
+        ]
+        
+        if any(artist in artist_name.lower() for artist in popular_artists):
+            return video_id, True
+        
+        # For other artists, be more conservative - only mark as available if the search seems very specific
+        # Check if the song name and artist appear together in the search results
+        song_artist_combined = f"{song_name.lower()} {artist_name.lower()}"
+        if song_artist_combined in html.lower():
+            return video_id, True
+        
+        # Default to not available for unknown artists
+        return video_id, False
+        
     except Exception as e:
         print(f"Error searching YouTube: {e}")
-        return None
+        return None, False
 
 @app.route('/')
 def index():
@@ -112,7 +145,7 @@ def index():
     chaser_status = get_chaser_status(song)
     
     # Get YouTube video ID for audio playback
-    youtube_video_id = get_youtube_video(song['name'], song['artists'][0]['name'])
+    youtube_video_id, is_available = get_youtube_video(song['name'], song['artists'][0]['name'])
     
     return render_template('index.html', 
                          song_name=song['name'], 
@@ -120,7 +153,8 @@ def index():
                          all_artists=all_artists,
                          album_cover_url=album_cover_url,
                          chaser_status=chaser_status,
-                         youtube_video_id=youtube_video_id)
+                         youtube_video_id=youtube_video_id,
+                         audio_available=is_available)
 
 if __name__ == '__main__':
     if not os.path.exists('chaser.cache'):
